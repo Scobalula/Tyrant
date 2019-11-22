@@ -1,0 +1,18 @@
+﻿<Window x:Class="Tyrant.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Background="#FF373737"
+        Title="Tyrant | Working"
+        Height="183" Width="400" 
+        WindowStartupLocation="CenterOwner"
+        Closing="WindowClosing" 
+        ResizeMode="NoResize">
+    <Grid>
+        <Label x:Name="Message" Content="Exporting Assets" Margin="10,10,10,0" VerticalAlignment="Top" Height="52" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="22"/>
+        <Button Content="Cancel" Margin="0,0,10,10" Click="CancelClick" VerticalAlignment="Bottom" Height="25" ToolTip="Cancel the current task." HorizontalAlignment="Right" Width="75"/>
+        <ProgressBar x:Name="ProgressBar" Height="Auto" Margin="10,67,10,51" Foreground="White"/>
+    </Grid>
+</Window>

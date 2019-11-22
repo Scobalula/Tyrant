@@ -1,0 +1,17 @@
+﻿<Window x:Class="Tyrant.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Tyrant | About" Height="170.5" Width="400" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Background="#FF373737">
+        <Label Content="Tyrant - RE Engine Extractor" HorizontalAlignment="Left" Margin="105,10,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+        <Label Content="Developed by Scobalula" HorizontalAlignment="Left" Margin="105,37,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+        <Label x:Name="VersionLabel" Content="Version: {0}" HorizontalAlignment="Left" Margin="105,64,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+        <Button Click="HomePageButtonClick" Content="Github" HorizontalAlignment="Left" Margin="10,0,0,10" Width="90" Height="27" VerticalAlignment="Bottom"/>
+        <Image Margin="10,10,0,0" Stretch="Fill" HorizontalAlignment="Left" Width="84" Height="62" VerticalAlignment="Top"/>
+        <Image Margin="10,10,295,42" Source="/Tyrant;component/Icon.ico" Stretch="Fill"/>
+    </Grid>
+</Window>

@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataTemplate x:Key="ExportAllIcon">
+        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+            <Canvas Canvas.Left="0" Canvas.Top="0" Width="334.5" Height="334.5">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="0" Y="0"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF909090">
+                    <Path.Data>
+                        <PathGeometry Figures="M332.797 13.699c-1.489-1.306-3.608-1.609-5.404-0.776L2.893 163.695c-1.747 0.812-2.872 2.555-2.893 4.481  s1.067 3.693 2.797 4.542l91.833 45.068c1.684 0.827 3.692 0.64 5.196-0.484l89.287-66.734l-70.094 72.1  c-1 1.029-1.51 2.438-1.4 3.868l6.979 90.889c0.155 2.014 1.505 3.736 3.424 4.367c0.513 0.168 1.04 0.25 1.561 0.25  c1.429 0 2.819-0.613 3.786-1.733l48.742-56.482l60.255 28.79c1.308 0.625 2.822 0.651 4.151 0.073  c1.329-0.579 2.341-1.705 2.775-3.087L334.27 18.956C334.864 17.066 334.285 15.005 332.797 13.699z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF909090" StrokeThickness="0.36689347">
+                    <Path.Data>
+                        <PathGeometry Figures="m 133.07149 8.7206168 c -0.5463 -0.47916 -1.32375 -0.59033 -1.98269 -0.28471 L 12.031851 63.753177 c -0.64096 0.29791 -1.05372 0.93741 -1.06142 1.64405 -0.008 0.70663 0.39147 1.35493 1.0262 1.66643 l 33.69293 16.53515 c 0.61785 0.30342 1.35457 0.23481 1.90638 -0.17757 l 32.75882 -24.48427 -25.71704 26.45302 c -0.36689 0.37753 -0.55401 0.89448 -0.51365 1.41914 l 2.56055 33.346583 c 0.0569 0.73893 0.55218 1.37072 1.25625 1.60223 0.18821 0.0616 0.38157 0.0917 0.57272 0.0917 0.52429 0 1.03427 -0.22491 1.38906 -0.63583 l 17.88312 -20.72287 22.10717 10.56286 c 0.479889 0.22931 1.035369 0.23885 1.522969 0.0268 0.4876 -0.21243 0.8589 -0.62555 1.01813 -1.1326 l 31.17788 -99.298623 c 0.21794 -0.6934302 0.006 -1.4495902 -0.54043 -1.9287602 z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Viewbox>
+    </DataTemplate>
+</ResourceDictionary>

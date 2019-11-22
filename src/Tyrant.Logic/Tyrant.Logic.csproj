@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2D3CEFF1-8F47-40E9-8597-CDFD6B5CCF73}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tyrant.Logic</RootNamespace>
+    <AssemblyName>Tyrant.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssetHandlers\MaterialDefs.cs" />
+    <Compile Include="AssetHandlers\Mesh.cs" />
+    <Compile Include="AssetHandlers\Motion.cs" />
+    <Compile Include="AssetHandlers\MotionList.cs" />
+    <Compile Include="Helpers\NameCache.cs" />
+    <Compile Include="FileHandlers\Package.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AssetHandlers\SoundBank.cs" />
+    <Compile Include="Helpers\System.Half.cs" />
+    <Compile Include="Helpers\System.HalfHelper.cs" />
+    <Compile Include="AssetHandlers\Texture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PhilLibX\src\PhilLibX\PhilLibX.Interop\PhilLibX.Interop.vcxproj">
+      <Project>{eb08d910-0050-4d56-a799-ca04c41b7014}</Project>
+      <Name>PhilLibX.Interop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PhilLibX\src\PhilLibX\PhilLibX\PhilLibX.csproj">
+      <Project>{0f468d5b-2f30-42f5-9043-920040d83d9d}</Project>
+      <Name>PhilLibX</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

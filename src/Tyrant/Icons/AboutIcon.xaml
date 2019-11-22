@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataTemplate x:Key="AboutIcon">
+        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+            <Canvas Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="0" Y="0"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <Canvas>
+                    <Canvas>
+                        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2" Fill="#FF909090">
+                            <Path.Data>
+                                <PathGeometry Figures="M256 0C114.51 0 0 114.497 0 256c0 141.49 114.497 256 256 256c141.49 0 256-114.497 256-256C512 114.51 397.503 0 256 0z     M273.063 370.811c0 9.425-7.641 17.067-17.067 17.067s-17.067-7.641-17.067-17.067V226.843c0-9.425 7.641-17.067 17.067-17.067    s17.067 7.641 17.067 17.067V370.811z M256 192.389c-18.821 0-34.133-15.312-34.133-34.133c0-18.821 15.312-34.133 34.133-34.133    s34.133 15.312 34.133 34.133S274.821 192.389 256 192.389z" FillRule="NonZero"/>
+                            </Path.Data>
+                        </Path>
+                    </Canvas>
+                </Canvas>
+            </Canvas>
+        </Viewbox>
+    </DataTemplate>
+</ResourceDictionary>

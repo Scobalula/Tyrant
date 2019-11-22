@@ -1,0 +1,52 @@
+﻿<Window x:Class="Tyrant.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Tyrant | RE Engine Extractor" 
+        Background="#FF373737" 
+        Width="960" Height="540" 
+        MinWidth="640" MinHeight="360" 
+        Closing="MainWindowClosing">
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="TaskBarProgress"></TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <!-- Side Bar -->
+        <TextBox VerticalContentAlignment="Center" 
+                 Text="{Binding Path=FilterString, UpdateSourceTrigger=PropertyChanged}" 
+                 Height="28" Margin="41,0,0,0" 
+                 TextWrapping="NoWrap" 
+                 VerticalAlignment="Top"/>
+        <!-- Asset List -->
+        <ListView x:Name="AssetList" 
+                  MouseDoubleClick="AssetListMouseDoubleClick" 
+                  VirtualizingStackPanel.IsVirtualizing="True" 
+                  VirtualizingStackPanel.VirtualizationMode="Recycling" 
+                  AllowDrop="True" 
+                  Margin="41,28,0,0" 
+                  Foreground="White" 
+                  ItemsSource="{Binding Assets}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="512" Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Width="128" Header="Type" DisplayMemberBinding="{Binding Type}"/>
+                    <GridViewColumn Width="128" Header="Size" DisplayMemberBinding="{Binding DisplaySize}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button ContentTemplate="{StaticResource SettingsIcon}" Style="{StaticResource IconButtonStyle}" Click="SettingsClick" HorizontalAlignment="Left"  Width="41" Height="41" VerticalAlignment="Bottom"/>
+        <Button ContentTemplate="{StaticResource ExportAllIcon}" Style="{StaticResource IconButtonStyle}" Click="ExportAllClick" HorizontalAlignment="Left"  Width="41" Margin="0,41,0,0" Height="41" VerticalAlignment="Top"/>
+        <Button ContentTemplate="{StaticResource OpenFileIcon}" Style="{StaticResource IconButtonStyle}" Click="OpenFileClick"  HorizontalAlignment="Left"  Width="41" Height="41" VerticalAlignment="Top"/>
+        <Button ContentTemplate="{StaticResource AboutIcon}" Style="{StaticResource IconButtonStyle}" Click="AboutClick" HorizontalAlignment="Left"  Width="41" Height="41" VerticalAlignment="Bottom" Margin="0,0,0,41"/>
+        <Button ContentTemplate="{StaticResource ExportIcon}" Style="{StaticResource IconButtonStyle}" Click="ExportSelectedClick" HorizontalAlignment="Left"  Width="41" Margin="0,82,0,0" Height="41" VerticalAlignment="Top"/>
+        <Rectangle x:Name="Dimmer" Fill="#7F000000" Visibility="Hidden"/>
+    </Grid>
+</Window>
