@@ -79,8 +79,11 @@ namespace Tyrant
         {
             ".mdf2.10",
             "_mat.mdf2.10",
+            ".mdf2.6",
+            "_mat.mdf2.6",
             ".10",
             ".11",
+            ".8",
         };
 
         /// <summary>
@@ -361,6 +364,13 @@ namespace Tyrant
             }
         }
 
+        private void ExportUnknownFile(Package.Entry entry, string name)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(name));
+
+            File.WriteAllBytes(name, ActivePackage.LoadEntry(entry));
+        }
+
         /// <summary>
         /// Exports a Model Asset
         /// </summary>
@@ -468,6 +478,7 @@ namespace Tyrant
                         ExportMotionList(asset.PackageEntry, Path.Combine("exported_files", asset.Name));
                         break;
                     default:
+                        ExportUnknownFile(asset.PackageEntry, Path.Combine("exported_files", asset.Name));
                         break;
                 }
 

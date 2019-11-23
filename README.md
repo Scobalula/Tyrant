@@ -46,3 +46,14 @@ Greyhound is distributed with an automatic updater that will check for updates e
 ## Reporting Bugs
 
 Bugs can be reported through the Github issues or through the Discord server. Please make sure to provide a log when reporting bugs and any info you can possibly give.
+
+## FAQ
+
+* **Q**: I can't find some models?
+* **A**: Not all assets have names as entries within the archives are hashed, currently you can enable the setting to show all assets and in the future the tool will attempt to convert these if they are supported, however currently they are dumped raw.
+
+* **Q**: Some models export with no images?
+* **A**: The tool attempts to locate the material files based off the model name, this works for most models, but not all, in the future material defs will be exportable on their own to aid with models where the materials cannot be located.
+
+* **Q**: Some models export with incorrect UVs?
+* **A**: A lot of materials rely on UV scales and offsets, currently it is unknown what data defines this. Usually this easy to fix by shifting the UVs yourself, or spliting the images, as it is usually used where 1 image contains multiple variants.

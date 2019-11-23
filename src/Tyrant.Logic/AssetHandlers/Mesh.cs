@@ -325,9 +325,7 @@ namespace Tyrant.Logic
             foreach (var boneNameIndex in reader.ReadArray<ushort>(header.BoneNamesPointer, boneDataHeader.BoneCount))
                 boneNames.Add(strings[boneNameIndex]);
 
-            Model model = new Model();
-
-
+            var bones = new List<Model.Bone>(boneDataHeader.BoneCount);
 
             if (header.BoneDataHeaderPointer > 0)
             {
@@ -341,143 +339,159 @@ namespace Tyrant.Logic
                             boneMatrices[i].W.Y,
                             boneMatrices[i].W.Z), boneMatrices[i].ToQuaternion());
 
-                    model.Bones.Add(bone);
+                    bones.Add(bone);
                 }
             }
 
-            var modelHeader = reader.ReadStruct<ModelHeaderRE7>(header.ModelPointers[0]);
-            var vertexSize = 20 + (modelHeader.UVCount * 4) + (boneDataHeader.BoneCount > 0 ? 16 : 0);
+            bool firstMdlProcessed = false;
 
-            reader.BaseStream.Position = header.ModelPointers[0] + 64;
-            var materialIndices = reader.ReadArray<short>(header.MaterialNamesPointer, modelHeader.MaterialCount);
-
-            var lodPointers = reader.ReadArray<long>(reader.ReadInt64(), modelHeader.LODCount);
-
-            var uniqueMaterials = new List<string>(modelHeader.MaterialCount);
-
-            foreach (var lodPointer in lodPointers)
+            for (int mdl = 0; mdl < 3; mdl++)
             {
+                if (header.ModelPointers[mdl] == 0)
+                    continue;
 
-                var lodHeader = reader.ReadStruct<LODHeaderRE7>(lodPointer);
-                var boneIndices = reader.ReadArray<short>(lodPointer + 16, lodHeader.BoneCount);
+                if (firstMdlProcessed)
+                    break;
 
-                var meshPointers = reader.ReadArray<long>(lodHeader.MeshesPointer, lodHeader.MeshCount);
+                var lods = new List<Model>();
 
-                foreach (var meshPointer in meshPointers)
+                var modelHeader = reader.ReadStruct<ModelHeaderRE7>(header.ModelPointers[mdl]);
+                var vertexSize = 20 + (modelHeader.UVCount * 4) + (boneDataHeader.BoneCount > 0 ? 16 : 0);
+
+                reader.BaseStream.Position = header.ModelPointers[mdl] + (firstMdlProcessed ? 16 : 64);
+                var materialIndices = reader.ReadArray<short>(header.MaterialNamesPointer, modelHeader.MaterialCount);
+
+                firstMdlProcessed = true;
+
+                var lodPointers = reader.ReadArray<long>(reader.ReadInt64(), modelHeader.LODCount);
+
+                foreach (var lodPointer in lodPointers)
                 {
-                    var mesh = reader.ReadStruct<LODMeshRE7>(meshPointer);
-                    var subMeshes = reader.ReadArray<LODSubMeshRE7>(meshPointer + 16, mesh.SubMeshCount);
-                    int verticesRead = 0;
-
-                    for (int i = 0; i < subMeshes.Length; i++)
+                    var model = new Model()
                     {
-                        var materialName = strings[materialIndices[subMeshes[i].MaterialIndex]];
+                        Bones = bones
+                    };
 
-                        if (!uniqueMaterials.Contains(materialName))
-                            uniqueMaterials.Add(materialName);
+                    var uniqueMaterials = new List<string>(modelHeader.MaterialCount);
 
-                        var subMesh = new Model.Mesh();
+                    var lodHeader = reader.ReadStruct<LODHeaderRE7>(lodPointer);
+                    var boneIndices = reader.ReadArray<short>(lodPointer + 16, lodHeader.BoneCount);
 
-                        subMesh.MaterialIndices.Add(uniqueMaterials.IndexOf(materialName));
+                    var meshPointers = reader.ReadArray<long>(lodHeader.MeshesPointer, lodHeader.MeshCount);
 
-                        int subMeshVertexCount = 0;
-                        int subMeshFaceCount = subMeshes[i].FaceCount;
+                    foreach (var meshPointer in meshPointers)
+                    {
+                        var mesh = reader.ReadStruct<LODMeshRE7>(meshPointer);
+                        var subMeshes = reader.ReadArray<LODSubMeshRE7>(meshPointer + 16, mesh.SubMeshCount);
+                        int verticesRead = 0;
 
-                        // Since the counts aren't stored in each, we can use this to determine the counts
-                        if (i != subMeshes.Length - 1)
-                            subMeshVertexCount = subMeshes[i + 1].VertexIndex - subMeshes[i].VertexIndex;
-                        else
-                            subMeshVertexCount = mesh.VertexCount - verticesRead;
-
-
-                        verticesRead += subMeshVertexCount;
-
-                        reader.BaseStream.Position = header.GeometryPointer + 48 + (vertexSize * subMeshes[i].VertexIndex);
-
-                        for (int v = 0; v < subMeshVertexCount; v++)
+                        for (int i = 0; i < subMeshes.Length; i++)
                         {
-                            // Base vertex data
-                            var vertex = new Model.Vertex(
-                                reader.ReadStruct<Vector3>(),
-                                reader.ReadStruct<PackedVector3>().Unpack(),
-                                reader.ReadStruct<PackedVector3>().Unpack());
-                            vertex.UVs.Add(new Vector2(reader.ReadStruct<Half>(), reader.ReadStruct<Half>()));
-                            // Skip unnsupported UV layers
-                            reader.BaseStream.Position += 4 * (modelHeader.UVCount - 1);
+                            var materialName = strings[materialIndices[subMeshes[i].MaterialIndex]];
 
-                            // Check if we have bones
-                            if (lodHeader.BoneCount > 0)
+                            if (!uniqueMaterials.Contains(materialName))
+                                uniqueMaterials.Add(materialName);
+
+                            var subMesh = new Model.Mesh();
+
+                            subMesh.MaterialIndices.Add(uniqueMaterials.IndexOf(materialName));
+
+                            int subMeshVertexCount = 0;
+                            int subMeshFaceCount = subMeshes[i].FaceCount;
+
+                            // Since the counts aren't stored in each, we can use this to determine the counts
+                            if (i != subMeshes.Length - 1)
+                                subMeshVertexCount = subMeshes[i + 1].VertexIndex - subMeshes[i].VertexIndex;
+                            else
+                                subMeshVertexCount = mesh.VertexCount - verticesRead;
+
+
+                            verticesRead += subMeshVertexCount;
+
+                            reader.BaseStream.Position = header.GeometryPointer + 48 + (vertexSize * subMeshes[i].VertexIndex);
+
+                            for (int v = 0; v < subMeshVertexCount; v++)
                             {
-                                var localBoneIndices = reader.ReadBytes(8);
-                                var weights = reader.ReadBytes(8);
-                                var weightSum = 0.0f;
+                                // Base vertex data
+                                var vertex = new Model.Vertex(
+                                    reader.ReadStruct<Vector3>(),
+                                    reader.ReadStruct<PackedVector3>().Unpack(),
+                                    reader.ReadStruct<PackedVector3>().Unpack());
+                                vertex.UVs.Add(new Vector2(reader.ReadStruct<Half>(), reader.ReadStruct<Half>()));
+                                // Skip unnsupported UV layers
+                                reader.BaseStream.Position += 4 * (modelHeader.UVCount - 1);
 
-                                for (int w = 0; w < 8 && weights[w] != 0; w++)
+                                // Check if we have bones
+                                if (lodHeader.BoneCount > 0)
                                 {
-                                    vertex.Weights.Add(new Model.Vertex.Weight()
-                                    {
-                                        BoneIndex = boneIndices[localBoneIndices[w]],
-                                        Influence = weights[w] / 255.0f
-                                    });
+                                    var localBoneIndices = reader.ReadBytes(8);
+                                    var weights = reader.ReadBytes(8);
+                                    var weightSum = 0.0f;
 
-                                    weightSum += vertex.Weights[w].Influence;
+                                    for (int w = 0; w < 8 && weights[w] != 0; w++)
+                                    {
+                                        vertex.Weights.Add(new Model.Vertex.Weight()
+                                        {
+                                            BoneIndex = boneIndices[localBoneIndices[w]],
+                                            Influence = weights[w] / 255.0f
+                                        });
+
+                                        weightSum += vertex.Weights[w].Influence;
+                                    }
+
+                                    var multiplier = 1.0f / weightSum;
+
+                                    foreach (var weight in vertex.Weights)
+                                        weight.Influence *= multiplier;
                                 }
 
-                                var multiplier = 1.0f / weightSum;
-
-                                foreach (var weight in vertex.Weights)
-                                    weight.Influence *= multiplier;
+                                subMesh.Vertices.Add(vertex);
                             }
 
-                            subMesh.Vertices.Add(vertex);
+                            switch (lodHeader.Flags)
+                            {
+                                case 0:
+                                    reader.BaseStream.Position = geometryHeader.FaceBufferOffset + (2 * subMeshes[i].FaceIndex);
+
+                                    for (int f = 0; f < subMeshes[i].FaceCount / 3; f++)
+                                    {
+                                        var v1 = reader.ReadUInt16();
+                                        var v2 = reader.ReadUInt16();
+                                        var v3 = reader.ReadUInt16();
+
+                                        if (v1 != v2 && v2 != v3 && v3 != v1)
+                                            subMesh.Faces.Add(new Model.Face(v1, v2, v3));
+                                    }
+                                    break;
+                                case 1:
+                                    reader.BaseStream.Position = geometryHeader.FaceBufferOffset + (4 * subMeshes[i].FaceIndex);
+
+                                    for (int f = 0; f < subMeshes[i].FaceCount / 3; f++)
+                                    {
+                                        var v1 = reader.ReadInt32();
+                                        var v2 = reader.ReadInt32();
+                                        var v3 = reader.ReadInt32();
+
+                                        if (v1 != v2 && v2 != v3 && v3 != v1)
+                                            subMesh.Faces.Add(new Model.Face(v1, v2, v3));
+                                    }
+                                    break;
+                            }
+
+                            model.Meshes.Add(subMesh);
                         }
-
-                        switch (lodHeader.Flags)
-                        {
-                            case 0:
-                                reader.BaseStream.Position = geometryHeader.FaceBufferOffset + (2 * subMeshes[i].FaceIndex);
-
-                                for (int f = 0; f < subMeshes[i].FaceCount / 3; f++)
-                                {
-                                    var v1 = reader.ReadUInt16();
-                                    var v2 = reader.ReadUInt16();
-                                    var v3 = reader.ReadUInt16();
-
-                                    if (v1 != v2 && v2 != v3 && v3 != v1)
-                                        subMesh.Faces.Add(new Model.Face(v1, v2, v3));
-                                }
-                                break;
-                            case 1:
-                                reader.BaseStream.Position = geometryHeader.FaceBufferOffset + (4 * subMeshes[i].FaceIndex);
-
-                                for (int f = 0; f < subMeshes[i].FaceCount / 3; f++)
-                                {
-                                    var v1 = reader.ReadInt32();
-                                    var v2 = reader.ReadInt32();
-                                    var v3 = reader.ReadInt32();
-
-                                    if (v1 != v2 && v2 != v3 && v3 != v1)
-                                        subMesh.Faces.Add(new Model.Face(v1, v2, v3));
-                                }
-                                break;
-                        }
-
-                        model.Meshes.Add(subMesh);
                     }
+
+                    foreach (var materialName in uniqueMaterials)
+                    {
+                        model.Materials.Add(new Model.Material(materialName));
+                    }
+
+                    lods.Add(model);
                 }
 
-                foreach (var materialName in uniqueMaterials)
-                {
-                    var material = new Model.Material(materialName);
-                }
-
-                break;
+                results.Add(lods);
             }
-
-            results.Add(new List<Model>
-            {
-                model
-            });
 
             return results;
         }
@@ -547,6 +561,9 @@ namespace Tyrant.Logic
             {
                 if (header.ModelPointers[mdl] == 0)
                     continue;
+
+                if (firstMdlProcessed)
+                    break;
 
                 var lods = new List<Model>();
 
