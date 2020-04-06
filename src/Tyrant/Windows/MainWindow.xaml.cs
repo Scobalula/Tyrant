@@ -70,6 +70,8 @@ namespace Tyrant
         {
             "natives/x64/streaming/",
             "natives/x64/",
+            "natives/stm/streaming/",
+            "natives/stm/",
         };
 
         /// <summary>
@@ -81,9 +83,12 @@ namespace Tyrant
             "_mat.mdf2.10",
             ".mdf2.6",
             "_mat.mdf2.6",
+            ".mdf2.13",
+            "_mat.mdf2.13",
             ".10",
             ".11",
             ".8",
+            ".190820018"
         };
 
         /// <summary>
@@ -278,7 +283,6 @@ namespace Tyrant
             var folder = Path.Combine(path, motions.Item1);
 
             var result = path;
-
             Directory.CreateDirectory(folder);
 
             foreach(var motion in motions.Item2)
@@ -390,7 +394,7 @@ namespace Tyrant
                 {
                     try
                     {
-                        materials = MaterialDefs.Convert(ActivePackage.LoadEntry(result));
+                        materials = MaterialDefs.Convert(ActivePackage.LoadEntry(result), prefix.Split('.').Last());
                         break;
                     }
                     catch
@@ -487,6 +491,9 @@ namespace Tyrant
             }
             catch (Exception e)
             {
+#if DEBUG
+                File.WriteAllBytes("BAD_BUFFER.dat", ActivePackage.LoadEntry(asset.PackageEntry));
+#endif
                 Log(string.Format("Error has occured while exporting {0}: {1}", Path.GetFileNameWithoutExtension(asset.Name), e), "ERROR");
             }
         }

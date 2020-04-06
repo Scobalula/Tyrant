@@ -85,6 +85,19 @@ namespace Tyrant.Logic
         /// Resident Evil 7 Material Texture Entry
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        internal struct MaterialTextureEntryRE3
+        {
+            public long TypePointer;
+            public uint TypeHash;
+            public uint UnkHash;
+            public long TextureNamePointer;
+            public long Padding;
+        }
+
+        /// <summary>
+        /// Resident Evil 7 Material Texture Entry
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         internal struct MaterialSettingsInfoRE7
         {
             public long NamePointer;
@@ -153,32 +166,59 @@ namespace Tyrant.Logic
         /// <summary>
         /// Converts the given material file
         /// </summary>
-        public static Dictionary<string, Model.Material> Convert(byte[] buffer)
+        public static Dictionary<string, Model.Material> ConvertRE3(BinaryReader reader)
+        {
+            var results = new Dictionary<string, Model.Material>();
+
+            {
+                reader.BaseStream.Position = 0;
+                var header = reader.ReadStruct<MaterialHeaderRE7>();
+                var materials = reader.ReadArray<MaterialEntryRE2>(header.MaterialCount);
+
+                Console.WriteLine(Marshal.SizeOf<MaterialEntryRE2>());
+
+                foreach (var material in materials)
+                {
+                    var result = new Model.Material(reader.ReadUTF16NullTerminatedString(material.NamePointer));
+
+                    foreach (var texture in reader.ReadArray<MaterialTextureEntryRE3>(material.TexturesPointer, material.TextureCount))
+                        result.Images[reader.ReadUTF16NullTerminatedString(texture.TypePointer)] = reader.ReadUTF16NullTerminatedString(texture.TextureNamePointer).ToLower();
+                    //foreach (var setting in reader.ReadArray<MaterialSettingsInfoRE7>(material.SettingsInfoPointer, material.SettingsInfoCount))
+                    //    result.Settings[reader.ReadUTF16NullTerminatedString(setting.NamePointer)] = reader.ReadArray<float>(material.SettingsBufferPointer + setting.DataOffset, setting.DataCount);
+
+                    results[result.Name] = result;
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Converts the given material file
+        /// </summary>
+        public static Dictionary<string, Model.Material> Convert(byte[] buffer, string gameName = "13")
         {
             using (var stream = new MemoryStream(buffer))
             {
-                return Convert(stream);
+                return Convert(stream, gameName);
             }
         }
 
         /// <summary>
         /// Converts the given material file
         /// </summary>
-        public static Dictionary<string, Model.Material> Convert(Stream stream)
+        public static Dictionary<string, Model.Material> Convert(Stream stream, string gameName = "13")
         {
             using (var reader = new BinaryReader(stream))
             {
-                reader.BaseStream.Position = 28;
+                switch(gameName)
+                {
+                    case "6":       return ConvertRE7(reader);
+                    case "10":      return ConvertRE2(reader);
+                    case "13":      return ConvertRE3(reader);
+                }
 
-                // Check size of buffer
-                if(reader.ReadUInt32() != 0)
-                {
-                    return ConvertRE2(reader);
-                }
-                else
-                {
-                    return ConvertRE7(reader);
-                }
+                throw new Exception();
             }
         }
     }

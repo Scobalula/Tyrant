@@ -89,7 +89,7 @@ namespace Tyrant.Logic
 
                 using (var stream = new MemoryStream(reader.ReadBytes((int)(endOffset - offsets[i]))))
                 {
-                    results.Add(Motion.Convert(stream));
+                    results.Add(Motion.Convert(stream, null));
                 }
             }
 
@@ -103,6 +103,7 @@ namespace Tyrant.Logic
         {
             var header = reader.ReadStruct<MotionListHeaderRE2>();
             var results = new List<Tuple<string, Animation>>();
+            var bones = new Dictionary<uint, Animation.Bone>();
 
             // Sort by offsets since they don't store sizes, we also need to remove dupes as some entries point to another
             var offsets = reader.ReadArray<long>(header.AssetsPointer, header.AssetCount).Distinct().OrderBy(x => x).ToArray();
@@ -122,9 +123,11 @@ namespace Tyrant.Logic
 
                 reader.BaseStream.Position = offsets[i];
 
-                using (var stream = new MemoryStream(reader.ReadBytes((int)(endOffset - offsets[i]))))
+                var buffer = reader.ReadBytes((int)(endOffset - offsets[i]));
+
+                using (var stream = new MemoryStream(buffer))
                 {
-                    results.Add(Motion.Convert(stream));
+                    results.Add(Motion.Convert(stream, bones));
                 }
             }
 
@@ -154,6 +157,7 @@ namespace Tyrant.Logic
                 {
                     case 0x3C: return ConvertRE7(reader);
                     case 0x55: return ConvertRE2(reader);
+                    case 0x63: return ConvertRE2(reader);
                     default: throw new Exception("Invalid Motion List Version");
                 }
             }
